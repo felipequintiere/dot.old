@@ -1,0 +1,5 @@
+# Insert your preferred key mappings here.
+unmap d
+unmap u
+map <c-d> scrollPageDown
+map <c-u> scrollPageUp

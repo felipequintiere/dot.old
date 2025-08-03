@@ -1,0 +1,6 @@
+*font: xft:monospace:style=Regular:size=12
+!run 'xrdb .Xresources' on a console emulator to update '.Xresources' file
+
+!Colors
+*.foreground: #ffffff
+*.background: #000000

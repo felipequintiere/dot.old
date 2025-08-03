@@ -1,0 +1,24 @@
+
+#font pango:DejaVu Sans mono 10
+font pango:Hack 10
+title_align center
+
+# class                 border       background   text         indicator    child_border
+client.focused          #ffffffcc    #eeeeeecc     #000000ff    #eeeeeecc    #eeeeeecc
+client.focused_inactive #000000cc    #000000cc     #bbbbbbff    #222222cc    #000000cc
+client.unfocused        #000000cc    #000000cc     #777777ff    #111111cc    #000000cc
+client.urgent           #ff0000cc    #000000cc     #ffffffcc    #ff0000cc    #ff0000cc
+client.placeholder      #333333cc    #000000cc     #888888cc    #333333cc    #000000cc
+client.background       #000000
+
+default_border pixel 2
+
+smart_gaps on
+hide_edge_borders smart
+#gaps inner 4
+#gaps outer 4
+gaps inner 8
+gaps outer 10
+workspace 10 gaps inner 15
+workspace 10 gaps outer 15
+

@@ -1,0 +1,82 @@
+# make sure KVM is enabled:
+$ LC_ALL=C.UTF-8 lscpu | grep Virtualization
+
+the output for my machine should be:
+Virtualization:                       VT-x
+
+# install the needed packages:
+sudo pacman -S qemu-full virt-manager ebtables
+
+
+$ sudo pacman -S ebtables
+resolving dependencies...
+looking for conflicting packages...
+:: iptables-nft-1:1.8.11-2 and iptables-1:1.8.11-2 are in conflict. Remove iptables? [y/N] y
+
+enable libvirtd daemon:
+$ sudo systemctl enable libvirtd
+$ sudo systemctl start libvirtd
+
+# check whether or not it's working properly;
+# as you can see, in my case it seems be a problem with dnsmasq:
+$ sudo systemctl status libvirtd
+● libvirtd.service - libvirt legacy monolithic daemon
+     Loaded: loaded (/usr/lib/systemd/system/libvirtd.service; enabled; preset: disabled)
+     Active: active (running) since Sun 2025-05-04 12:18:12 -03; 1s ago
+ Invocation: 1be4465a350d4951a234a66bb441830c
+TriggeredBy: ● libvirtd.socket
+             ● libvirtd-ro.socket
+             ● libvirtd-admin.socket
+       Docs: man:libvirtd(8)
+             https://libvirt.org/
+   Main PID: 2977 (libvirtd)
+      Tasks: 21 (limit: 32768)
+     Memory: 9.6M (peak: 9.9M)
+        CPU: 141ms
+     CGroup: /system.slice/libvirtd.service
+             └─2977 /usr/bin/libvirtd --timeout 120
+
+May 04 12:18:12 archlinux systemd[1]: Starting libvirt legacy monolithic daemon...
+May 04 12:18:12 archlinux systemd[1]: Started libvirt legacy monolithic daemon.
+May 04 12:18:12 archlinux libvirtd[2977]: libvirt version: 11.2.0
+May 04 12:18:12 archlinux libvirtd[2977]: hostname: archlinux
+May 04 12:18:12 archlinux libvirtd[2977]: Unable to find 'dnsmasq' binary in $PATH: No such file or directory
+May 04 12:18:12 archlinux libvirtd[2977]: Cannot find 'dmidecode' in path: No such file or directory
+May 04 12:18:12 archlinux libvirtd[2977]: Cannot find 'dmidecode' in path: No such file or directory
+
+
+# add your user to the 'libvirt' group (the name may be different, see /etc/group):
+$ sudo usermod -G libvirt -a username 
+
+
+# install lxsession (policy kit)
+$ sudo pacman lxsession
+
+
+# at first, I got the following error after trying to create a guest machine:
+Unable to complete install: 'Requested operation is not valid: network 'default' is not active'
+
+Traceback (most recent call last):
+  File "/usr/share/virt-manager/virtManager/asyncjob.py", line 71, in cb_wrapper
+    callback(asyncjob, *args, **kwargs)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/share/virt-manager/virtManager/createvm.py", line 2008, in _do_async_install
+    installer.start_install(guest, meter=meter)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/usr/share/virt-manager/virtinst/install/installer.py", line 726, in start_install
+    domain = self._create_guest(
+            guest, meter, initial_xml, final_xml,
+            doboot, transient)
+  File "/usr/share/virt-manager/virtinst/install/installer.py", line 667, in _create_guest
+    domain = self.conn.createXML(initial_xml or final_xml, 0)
+  File "/usr/lib/python3.13/site-packages/libvirt.py", line 4545, in createXML
+    raise libvirtError('virDomainCreateXML() failed')
+libvirt.libvirtError: Requested operation is not valid: network 'default' is not active
+
+
+# install dnsmasq dmidecode
+$ sudo pacman -S dnsmasq dmidecode
+
+# then restart libvirtd
+$ sudo systemctl restart libvirtd
+

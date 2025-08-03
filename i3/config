@@ -1,0 +1,250 @@
+
+# ==============================================================================
+# i3-specific configuration
+# these settings apply only to i3wm and may not be compatible with sway
+# ==============================================================================
+
+# I'm using Mod4 as Mod1 and viceversa: 'setkxkbmap -option "altwin:swap_alt_win"'
+#set $mod Mod1
+set $mod Mod4
+
+exec --no-startup-id ~/.config/settings/.b.sh
+exec --no-startup-id ~/.fehbg
+exec --no-startup-id picom -f
+exec --no-startup-id flameshot
+exec --no-startup-id /usr/bin/otd-daemon
+# if not using otd, use the following config script
+#exec_always --no-startup-id ~/.config/settings/tablet.sh
+exec_always --no-startup-id ~/.config/settings/monitor.sh
+exec_always --no-startup-id ~/.config/settings/screensaver.sh
+exec_always --no-startup-id ~/.config/settings/keyboard.sh
+exec_always --no-startup-id xset r rate 200 35
+exec_always --no-startup-id ~/.config/settings/mouse.sh
+exec_always --no-startup-id bash -c "echo '0' > $HOME/.config/settings/.toggle_i3bar_log"
+#exec alacritty --class dropdown &
+
+include ~/.config/i3/appearance.conf
+include ~/.config/i3/bar_i3status.conf
+#include ~/.config/i3/bar_i3blocks.conf
+
+
+
+# change brightness settings
+bindsym $mod+x exec ~/.config/settings/b_up.sh
+bindsym $mod+z exec ~/.config/settings/b_down.sh
+
+bindsym $mod+Return exec $HOME/.config/settings/fish.sh
+bindsym $mod+Shift+Return exec alacritty
+bindsym $mod+d exec ~/.config/settings/dmenu_run.sh
+bindsym $mod+i exec ~/.config/settings/dmenu_xournalpp.sh
+bindsym $mod+o exec ~/.config/settings/dmenu_books.sh
+bindsym $mod+p exec ~/.config/settings/dmenu_scripts.sh
+
+bindsym $mod+Shift+f exec flameshot gui
+bindsym Mod1+Shift+s exec flameshot gui
+#bindsym $mod+Shift+f exec flatpak run org.flameshot.Flameshot gui
+# arch repository flameshot: (sudo pacman -S flameshot)
+# flathub flameshot: (flatpak install flathub org.flameshot.Flameshot)
+
+#bindsym $mod+Shift+b bar mode toggle
+bindsym $mod+Shift+b exec ~/.config/settings/.toggle_i3bar.sh
+
+# actually, 'exec i3-msg' woks on sway - restart doesn't
+bindsym $mod+Control+r restart
+bindsym $mod+Control+q exec i3-msg exit
+bindsym $mod+Shift+r restart
+bindsym $mod+Shift+e exec i3-msg exit
+
+bindsym $mod+b split h
+bindsym $mod+v split v
+
+# use 'floating_modifier $mod normal' on sway
+floating_modifier $mod
+
+
+
+
+# Start XDG autostart .desktop files using dex. See also
+# https://wiki.archlinux.org/index.php/XDG_Autostart
+exec --no-startup-id dex --autostart --environment i3
+
+# The combination of xss-lock, nm-applet and pactl is a popular choice, so
+# they are included here as an example. Modify as you see fit.
+
+# xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
+# screen before suspend. Use loginctl lock-session to lock your screen.
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+
+# NetworkManager is the most popular way to manage wireless networks on Linux,
+# and nm-applet is a desktop environment-independent system tray GUI for it.
+exec --no-startup-id nm-applet
+
+# Use pactl to adjust volume in PulseAudio.
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+
+
+for_window [class="anki"] floating enable
+for_window [class="virt-manager"] floating enable
+for_window [class="virtualbox manager"] floating enable
+for_window [class="packettracer"] floating enable
+for_window [class="steam"] floating enable
+for_window [class="discord"] floating enable
+for_window [class="dropdown"] move to scratchpad, floating enable, resize set 900 px 700 px
+
+
+
+# ==============================================================================
+# shared i3/sway configuration
+# ==============================================================================
+
+floating_minimum_size 200 x 200
+floating_maximum_size 1000 x 800
+#floating_maximum_size 1920 x 1080
+
+tiling_drag modifier
+focus_follows_mouse yes
+
+
+
+# adjust volume (pactl)
+bindsym $mod+Shift+x exec ~/.config/settings/inc_vol.sh
+bindsym $mod+Shift+z exec ~/.config/settings/dec_vol.sh
+
+# scratchpad configuration
+bindsym $mod+Shift+s move scratchpad
+bindsym $mod+s scratchpad show
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# toggle between tabbed and split
+bindsym $mod+t layout toggle tabbed split
+
+# change workspaces
+bindsym $mod+w workspace next
+bindsym $mod+Shift+w workspace prev
+
+# custom 'alt+tab'
+#bindsym $mod+Tab focus right
+#bindsym $mod+Shift+Tab focus left
+bindsym $mod+Tab focus next
+bindsym $mod+Shift+Tab focus prev
+
+# come back to last workspace with the same keystroke
+#workspace_auto_back_and_forth yes
+
+bindsym $mod+c kill
+bindsym $mod+f fullscreen toggle
+bindsym $mod+r floating toggle
+
+
+
+mode "window" {
+	# i3 specific setting - not supported by sway, comment out if using sway
+	# invert colors (xcalib)
+	# note: on my desktop, a GRUB/systemd parameter is required
+	# refer to 'grub_amdgpu' and 'systemd_amdgpu' in ~/.config/settings/man'
+	bindsym $mod+r exec ~/.config/settings/color_inversion.sh, mode default
+	bindsym r exec ~/.config/settings/color_inversion.sh, mode default
+
+	# i3 specific setting - not supported by sway, comment out if using sway
+	#bindsym $mod+a exec ~/.config/settings/dropdown.sh ,[class="dropdown"] scratchpad show, mode default
+	#bindsym a exec ~/.config/settings/dropdown.sh ,[class="dropdown"] scratchpad show, mode default
+
+	#bindsym $mod+a focus parent, mode default
+	#bindsym $mod+d focus child, mode default
+	#bindsym a focus parent, mode default
+	#bindsym d focus child, mode default
+
+	# change alacritty's theme
+	bindsym $mod+p exec ~/.config/alacritty/theme_up.sh
+	bindsym $mod+n exec ~/.config/alacritty/theme_down.sh
+	bindsym p exec ~/.config/alacritty/theme_up.sh
+	bindsym n exec ~/.config/alacritty/theme_down.sh
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+c mode "default"
+        bindsym $mod+e mode "default"
+}
+bindsym $mod+e mode "window"
+
+mode "evoker" {
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+c mode "default"
+        bindsym $mod+g mode "default"
+}
+bindsym $mod+g mode "evoker"
+
+
+
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+bindsym $mod+Control+h resize shrink width 100
+bindsym $mod+Control+j resize grow height 100
+bindsym $mod+Control+k resize shrink height 100
+bindsym $mod+Control+l resize grow width 100
+
+bindsym $mod+Shift+h move left 100
+bindsym $mod+Shift+j move down 100
+bindsym $mod+Shift+k move up 100
+bindsym $mod+Shift+l move right 100
+
+bindsym $mod+Control+Left resize shrink width 10 
+bindsym $mod+Control+Down resize grow height 10 
+bindsym $mod+Control+Up resize shrink height 10
+bindsym $mod+Control+Right resize grow width 10
+
+bindsym $mod+Shift+Left move left 10
+bindsym $mod+Shift+Down move down 10
+bindsym $mod+Shift+Up move up 10
+bindsym $mod+Shift+Right move right 10
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+
+

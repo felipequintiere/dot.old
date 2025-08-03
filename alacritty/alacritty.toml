@@ -1,0 +1,16 @@
+
+[general]
+import = ["~/.config/alacritty/themes/zteste.toml"]
+
+[font]
+normal = { family = "Hack", style = "Regular" }
+size = 12.0
+
+[window]
+opacity = 0.8
+padding = {x=10, y=10}
+
+
+# obs.: cc hex transparency code is equivalent to 80%
+
+

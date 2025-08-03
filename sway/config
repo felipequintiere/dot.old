@@ -1,0 +1,294 @@
+
+# ==============================================================================
+# sway-specific configuration
+# these settings apply only to swaywm and may not be compatible with i3
+# ==============================================================================
+
+# I'm using Mod4 as Mod1 and viceversa
+#set $mod Mod1
+set $mod Mod4
+
+# desktop settings
+set $monitor1 HDMI-A-2
+set $keyboard "6127:24729:Lenovo_Lenovo_Traditional_USB_Keyboard"
+set $mouse "1133:49271:Logitech_USB_Optical_Mouse"
+
+# laptop settings
+set $laptop-screen eDP-1
+set $laptop-keyboard "1:1:AT_Translated_Set_2_keyboard" 
+set $touchpad "2362:597:PNP0C50:0b_093A:0255_Touchpad"
+
+#set $wallpaper "~/.config/wallpaper/blue.png"
+#set $wallpaper "~/.config/wallpaper/evangelion.png"
+#set $wallpaper "~/.config/wallpaper/girl_in_the_woods.png"
+#set $wallpaper "~/.config/wallpaper/jellyfish.png"
+#set $wallpaper "~/.config/wallpaper/lain_blue.png"
+#set $wallpaper "~/.config/wallpaper/lain_gray.png"
+set $wallpaper "~/.config/wallpaper/lain_win10.png"
+#set $wallpaper "~/.config/wallpaper/noite_estrelada.png"
+#set $wallpaper "~/.config/wallpaper/purple.png"
+#set $wallpaper "~/.config/wallpaper/red.jpg"
+#set $wallpaper "~/.config/wallpaper/rei.png"
+#set $wallpaper "~/.config/wallpaper/windows11.png"
+
+exec /usr/bin/otd-daemon
+
+include ~/.config/sway/appearance.conf
+include ~/.config/sway/bar_i3status.conf
+include /etc/sway/config.d/*
+
+
+# desktop settings
+output $monitor1 {
+    res 1920x1080@74.973Hz
+    pos 0 0
+    scale 1
+    background $wallpaper stretch
+    #background #000000 solid_color
+    # position may need adjustment when scale is enabled
+}
+
+input $keyboard {
+    xkb_layout us,br
+    xkb_options "altwin:swap_alt_win,grp:alt_space_toggle,ctrl:nocaps"
+    repeat_delay 200
+    repeat_rate 35
+}
+
+input $mouse {
+    natural_scroll disabled
+    accel_profile "flat"
+    #pointer_accel 0.5
+    #left_handed enabled
+}
+
+
+
+# laptop settings
+output $laptop-screen {
+    res 1920x1080
+    pos 0 0
+    scale 1
+    background ~/.config/wallpaper/red.jpg stretch
+    #background #000000 solid_color
+}
+#bindswitch --reload --locked lid:on output $laptop disable
+#bindswitch --reload --locked lid:off output $laptop enable
+
+input $laptop-keyboard {
+    xkb_layout "us,br"
+    xkb_options "altwin:swap_alt_win,grp:alt_space_toggle,ctrl:nocaps"
+    repeat_delay 200
+    repeat_rate 35
+}
+
+input $touchpad {
+    natural_scroll enabled
+    scroll_method two_finger
+    click_method clickfinger
+    tap enabled
+    drag enabled
+    drag_lock disabled
+    dwt enabled
+    #middle_emulation enabled
+    #accel_profile "flat"
+    #pointer_accel 0.5
+}
+
+
+
+bindsym $mod+Return exec $HOME/.config/settings/fish.sh
+bindsym $mod+Shift+Return exec alacritty
+bindsym $mod+d exec ~/.config/settings/wmenu-run.sh
+bindsym $mod+i exec ~/.config/settings/wmenu_xournalpp.sh
+bindsym $mod+o exec ~/.config/settings/wmenu_books.sh
+bindsym $mod+p exec ~/.config/settings/wmenu_scripts.sh
+
+bindsym $mod+Shift+f exec grim -g "$(slurp)" - | wl-copy
+#bindsym Mod1+Shift+s exec grim -g "$(slurp)" - | wl-copy
+bindsym Mod1+Shift+s exec grim -g "$(slurp)" ~/.pictures/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png
+
+bindsym $mod+Shift+b bar topbar mode toggle
+
+bindsym $mod+Control+r reload
+bindsym $mod+Control+q exec i3-msg exit
+bindsym $mod+Shift+r reload
+bindsym $mod+Shift+e exec i3-msg exit
+
+bindsym $mod+b splith
+bindsym $mod+v splitv
+
+# change normal to inverse to use left mouse button for resizing and right
+floating_modifier $mod normal
+
+
+
+bindsym --locked XF86AudioMute exec pactl set-sink-mute \@DEFAULT_SINK@ toggle
+bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume \@DEFAULT_SINK@ -5%
+bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume \@DEFAULT_SINK@ +5%
+bindsym --locked XF86AudioMicMute exec pactl set-source-mute \@DEFAULT_SOURCE@ toggle
+
+bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
+bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
+
+bindsym Print exec grim
+
+
+
+# use 'swaymsg -t get_tree' to get the app_id
+# you may want to use the option 'resize set 800 600'
+for_window [app_id="anki"] floating enable, move position center
+
+for_window [app_id="steam"] floating enable
+for_window [app_id="discord"] floating enable
+
+
+
+# ==============================================================================
+# shared i3/sway configuration
+# ==============================================================================
+
+floating_minimum_size 200 x 200
+floating_maximum_size 1000 x 800
+#floating_maximum_size 1920 x 1080
+
+tiling_drag modifier
+focus_follows_mouse yes
+
+
+
+# adjust volume (pactl)
+bindsym $mod+Shift+x exec ~/.config/settings/inc_vol.sh
+bindsym $mod+Shift+z exec ~/.config/settings/dec_vol.sh
+
+# scratchpad configuration
+bindsym $mod+Shift+s move scratchpad
+bindsym $mod+s scratchpad show
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# toggle between tabbed and split
+bindsym $mod+t layout toggle tabbed split
+
+# change workspaces
+bindsym $mod+w workspace next
+bindsym $mod+Shift+w workspace prev
+
+# custom 'alt+tab'
+#bindsym $mod+Tab focus right
+#bindsym $mod+Shift+Tab focus left
+bindsym $mod+Tab focus next
+bindsym $mod+Shift+Tab focus prev
+
+# come back to last workspace with the same keystroke
+#workspace_auto_back_and_forth yes
+
+bindsym $mod+c kill
+bindsym $mod+f fullscreen toggle
+bindsym $mod+r floating toggle
+
+
+
+mode "window" {
+	# i3 specific setting - not supported by sway, comment out if using sway
+	# invert colors (xcalib)
+	# note: on my desktop, a GRUB/systemd parameter is required
+	# refer to 'grub_amdgpu' and 'systemd_amdgpu' in ~/.config/settings/man'
+	bindsym $mod+r exec ~/.config/settings/color_inversion.sh, mode default
+	bindsym r exec ~/.config/settings/color_inversion.sh, mode default
+
+	# i3 specific setting - not supported by sway, comment out if using sway
+	#bindsym $mod+a exec ~/.config/settings/dropdown.sh ,[class="dropdown"] scratchpad show, mode default
+	#bindsym a exec ~/.config/settings/dropdown.sh ,[class="dropdown"] scratchpad show, mode default
+
+	#bindsym $mod+a focus parent, mode default
+	#bindsym $mod+d focus child, mode default
+	#bindsym a focus parent, mode default
+	#bindsym d focus child, mode default
+
+	# change alacritty's theme
+	bindsym $mod+p exec ~/.config/alacritty/theme_up.sh
+	bindsym $mod+n exec ~/.config/alacritty/theme_down.sh
+	bindsym p exec ~/.config/alacritty/theme_up.sh
+	bindsym n exec ~/.config/alacritty/theme_down.sh
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+c mode "default"
+        bindsym $mod+e mode "default"
+}
+bindsym $mod+e mode "window"
+
+mode "evoker" {
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+c mode "default"
+        bindsym $mod+g mode "default"
+}
+bindsym $mod+g mode "evoker"
+
+
+
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+bindsym $mod+Control+h resize shrink width 100
+bindsym $mod+Control+j resize grow height 100
+bindsym $mod+Control+k resize shrink height 100
+bindsym $mod+Control+l resize grow width 100
+
+bindsym $mod+Shift+h move left 100
+bindsym $mod+Shift+j move down 100
+bindsym $mod+Shift+k move up 100
+bindsym $mod+Shift+l move right 100
+
+bindsym $mod+Control+Left resize shrink width 10
+bindsym $mod+Control+Down resize grow height 10
+bindsym $mod+Control+Up resize shrink height 10
+bindsym $mod+Control+Right resize grow width 10
+
+bindsym $mod+Shift+Left move left 10
+bindsym $mod+Shift+Down move down 10
+bindsym $mod+Shift+Up move up 10
+bindsym $mod+Shift+Right move right 10
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
